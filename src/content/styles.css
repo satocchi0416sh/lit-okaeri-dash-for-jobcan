@@ -65,6 +65,14 @@
   transition: all 0.15s ease;
   white-space: nowrap;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.jcs-tab .jcs-star-icon {
+  width: 14px;
+  height: 14px;
 }
 
 .jcs-tab:hover {
@@ -77,6 +85,38 @@
   color: white;
   border-color: #0ea5e9;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Search indicator */
+.jcs-search-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #0ea5e9;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #0369a1;
+}
+
+.jcs-search-icon {
+  font-size: 16px;
+}
+
+.jcs-search-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+.jcs-search-count {
+  background: #0ea5e9;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 /* List Container */
@@ -171,21 +211,46 @@
 .jcs-favorite-btn {
   background: transparent;
   border: none;
-  font-size: 18px;
   cursor: pointer;
-  color: #d1d5db;
   padding: 4px;
   transition: all 0.15s ease;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.jcs-favorite-btn:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .jcs-favorite-btn:hover {
-  color: #f59e0b;
   transform: scale(1.1);
 }
 
-.jcs-favorite-btn.active {
-  color: #f59e0b;
+.jcs-favorite-btn:hover .jcs-star-icon {
+  stroke: #f59e0b;
+}
+
+.jcs-favorite-btn.active .jcs-star-icon {
+  fill: #f59e0b;
+  stroke: #f59e0b;
+}
+
+/* Lucide Icons */
+.jcs-star-icon,
+.jcs-search-icon-svg {
+  transition: all 0.15s ease;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.lucide-star,
+.lucide-search {
+  width: 16px;
+  height: 16px;
 }
 
 /* Selected Display - Top */

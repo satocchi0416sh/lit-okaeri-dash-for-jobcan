@@ -25,6 +25,8 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "lucide": "^0.544.0",
+    "lucide-static": "^0.544.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "undici": "^5.28.4",

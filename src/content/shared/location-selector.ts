@@ -2,7 +2,7 @@
 
 import { CategoryKey, isInCategory } from './categories.js';
 import { loadFavorites, toggleFavorite } from './storage.js';
-import { Option, escapeHtml, getOptionByValue } from './utils.js';
+import { Option, escapeHtml, getOptionByValue, createStarIcon, createSearchIcon } from './utils.js';
 
 export interface LocationSelectorConfig {
     originalSelect: HTMLSelectElement;
@@ -60,7 +60,7 @@ export class LocationSelector {
                 </div>
                 <div class="jcs-tabs">
                     <button class="jcs-tab active" data-category="all">すべて</button>
-                    <button class="jcs-tab" data-category="favorites">⭐ お気に入り</button>
+                    <button class="jcs-tab" data-category="favorites">${createStarIcon(true)} お気に入り</button>
                     <button class="jcs-tab" data-category="キャンプ">キャンプ</button>
                     <button class="jcs-tab" data-category="スクール">スクール</button>
                     <button class="jcs-tab" data-category="イベント">イベント</button>
@@ -84,6 +84,18 @@ export class LocationSelector {
         const currentSelectedValue = this.originalSelect.value;
         let filteredOptions = this.getFilteredOptions();
         
+        // Add search indicator if search is active
+        if (this.currentSearch.trim()) {
+            const searchIndicator = document.createElement('div');
+            searchIndicator.className = 'jcs-search-indicator';
+            searchIndicator.innerHTML = `
+                <span class="jcs-search-icon">${createSearchIcon()}</span>
+                <span class="jcs-search-text">「${escapeHtml(this.currentSearch)}」の検索結果 (全体から検索)</span>
+                <span class="jcs-search-count">${filteredOptions.length}件</span>
+            `;
+            listElement.appendChild(searchIndicator);
+        }
+        
         // Create list items
         filteredOptions.forEach(option => {
             const item = this.createListItem(option, currentSelectedValue);
@@ -91,27 +103,30 @@ export class LocationSelector {
         });
         
         if (filteredOptions.length === 0) {
-            listElement.innerHTML = '<div class="jcs-no-results">該当する打刻場所がありません</div>';
+            const noResultsMsg = this.currentSearch.trim() 
+                ? `「${escapeHtml(this.currentSearch)}」に一致する打刻場所がありません`
+                : '該当する打刻場所がありません';
+            listElement.innerHTML += `<div class="jcs-no-results">${noResultsMsg}</div>`;
         }
     }
 
     private getFilteredOptions(): Option[] {
+        // If there's a search query, search across ALL options (ignore tab filter)
+        if (this.currentSearch.trim()) {
+            const searchLower = this.currentSearch.toLowerCase();
+            return this.options.filter(opt => 
+                opt.text.toLowerCase().includes(searchLower)
+            );
+        }
+        
+        // If no search query, apply tab filter normally
         let filteredOptions = this.options;
         
-        // Category filter
         if (this.currentCategory === 'favorites') {
             filteredOptions = this.options.filter(opt => this.favorites.includes(opt.value));
         } else if (this.currentCategory !== 'all') {
             filteredOptions = this.options.filter(opt => 
                 isInCategory(opt.text, this.currentCategory as CategoryKey)
-            );
-        }
-        
-        // Search filter
-        if (this.currentSearch) {
-            const searchLower = this.currentSearch.toLowerCase();
-            filteredOptions = filteredOptions.filter(opt => 
-                opt.text.toLowerCase().includes(searchLower)
             );
         }
         
@@ -131,13 +146,13 @@ export class LocationSelector {
                 <button class="jcs-favorite-btn ${isFavorite ? 'active' : ''}" 
                         data-value="${option.value}" 
                         title="${isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'}">
-                    ${isFavorite ? '⭐' : '☆'}
+                    ${createStarIcon(isFavorite)}
                 </button>
             </div>
         `;
         
         item.addEventListener('click', (e) => {
-            if (!(e.target as HTMLElement).classList.contains('jcs-favorite-btn')) {
+            if (!(e.target as HTMLElement).closest('.jcs-favorite-btn')) {
                 this.selectOption(option.value);
             }
         });
@@ -192,11 +207,12 @@ export class LocationSelector {
             this.renderList();
         });
         
-        // Favorite button clicks
+        // Favorite button clicks - use closest() to handle SVG child elements
         this.container.addEventListener('click', async (e) => {
-            if ((e.target as HTMLElement).classList.contains('jcs-favorite-btn')) {
+            const favoriteBtn = (e.target as HTMLElement).closest('.jcs-favorite-btn');
+            if (favoriteBtn) {
                 e.stopPropagation();
-                const value = (e.target as HTMLElement).dataset.value || '';
+                const value = (favoriteBtn as HTMLElement).dataset.value || '';
                 this.favorites = await toggleFavorite(value);
                 this.renderList();
             }
