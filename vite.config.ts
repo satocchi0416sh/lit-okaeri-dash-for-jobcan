@@ -9,7 +9,7 @@ export default defineConfig({
     webExtension({
       manifest: {
         manifest_version: 3,
-        name: "Jobcan Okaeri Dash",
+        name: "Okaeri Dash for Jobcan",
         version: "1.0.0",
         description: "Jobcanの打刻場所選択をリッチなUIに改善",
         action: {

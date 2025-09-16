@@ -37,8 +37,32 @@ export class LocationSelector {
         
         // Load favorites and initialize
         this.favorites = await loadFavorites();
-        const selectedOption = this.options.find(opt => opt.selected);
-        this.updateSelectedDisplay(selectedOption);
+        
+        // If there are favorites, select the first one automatically
+        if (this.favorites.length > 0) {
+            const firstFavoriteValue = this.favorites[0];
+            const firstFavoriteOption = this.options.find(opt => opt.value === firstFavoriteValue);
+            if (firstFavoriteOption) {
+                // Update the original select value
+                this.originalSelect.value = firstFavoriteValue;
+                
+                // Dispatch change event to notify Jobcan
+                const event = new Event('change', { bubbles: true });
+                this.originalSelect.dispatchEvent(event);
+                
+                // Update display
+                this.updateSelectedDisplay(firstFavoriteOption);
+            } else {
+                // Fallback to the originally selected option if favorite not found
+                const selectedOption = this.options.find(opt => opt.selected);
+                this.updateSelectedDisplay(selectedOption);
+            }
+        } else {
+            // No favorites, use the originally selected option
+            const selectedOption = this.options.find(opt => opt.selected);
+            this.updateSelectedDisplay(selectedOption);
+        }
+        
         this.renderList();
         this.setupEventListeners();
     }

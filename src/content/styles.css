@@ -329,6 +329,52 @@
   }
 }
 
+/* Work Status Button Styles */
+.work-status-btn {
+  position: relative;
+  padding: 12px 24px !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  border: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.jbc-btn-success {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+.jbc-btn-success:hover {
+  background-color: #218838 !important;
+}
+
+.jbc-btn-danger {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+.jbc-btn-danger:hover {
+  background-color: #c82333 !important;
+}
+
+.work-status-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.work-status-icon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.work-status-text {
+  font-size: 18px;
+  letter-spacing: 0.05em;
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .jcs-tabs {

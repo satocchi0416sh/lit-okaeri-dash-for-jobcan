@@ -84,6 +84,20 @@ import { createOptionsFromSelect } from './shared/utils.js';
     function enhanceTimeInputs() {
         console.log('Looking for time input fields...');
         
+        // First, hide the help text elements that contain example formats
+        const helpTexts = document.querySelectorAll('small.jbc-text-sub');
+        helpTexts.forEach(helpText => {
+            const helpElement = helpText as HTMLElement;
+            // Check if this contains the time format examples
+            if (helpElement.innerHTML.includes('0915') || 
+                helpElement.innerHTML.includes('2613') || 
+                helpElement.innerHTML.includes('09時15分') ||
+                helpElement.innerHTML.includes('深夜2時13分')) {
+                helpElement.style.display = 'none';
+                console.log('Hidden time format help text');
+            }
+        });
+        
         // Strategy 1: Look for inputs with specific names that indicate time
         const timeNameInputs = document.querySelectorAll('input[name*="time"], input[name*="Time"], input[name*="adit_time"]');
         console.log('Found', timeNameInputs.length, 'inputs with time-related names');
@@ -102,33 +116,30 @@ import { createOptionsFromSelect } from './shared/utils.js';
             // Skip if already enhanced
             if (inputElement.style.display === 'none') return;
             
-            // Check the entire table row context
-            const row = inputElement.closest('tr');
+            // Skip if this is within a help text element
+            if (inputElement.closest('small.jbc-text-sub')) return;
+            
+            // Check the immediate parent cell, not the entire row to avoid help text
             const cell = inputElement.closest('td');
             
             let contextText = '';
-            if (row) {
-                contextText = row.textContent || '';
-            } else if (cell) {
-                contextText = cell.textContent || '';
+            if (cell) {
+                // Get only the direct text content, not from nested elements
+                const cellClone = cell.cloneNode(true) as HTMLElement;
+                // Remove small elements (help text)
+                cellClone.querySelectorAll('small').forEach(small => small.remove());
+                contextText = cellClone.textContent || '';
             }
             
             console.log(`Input ${index}:`, inputElement, 'Context:', contextText.trim());
             
-            // Enhanced time field detection
-            const isTimeField = contextText.includes('時刻') ||
-                              contextText.includes('時間') ||
+            // More precise time field detection - look for actual time labels, not help text
+            const isTimeField = (contextText.includes('時刻') && !contextText.includes('例')) ||
                               contextText.includes('出勤') ||
                               contextText.includes('退勤') ||
                               contextText.includes('休憩') ||
-                              contextText.includes('0915') ||
-                              contextText.includes('2613') ||
-                              contextText.includes('09時15分') ||
-                              contextText.includes('深夜2時13分') ||
-                              contextText.includes('(例)') ||
-                              /\d{2}:\d{2}/.test(contextText) || // HH:MM format
-                              /\d{4}/.test(inputElement.value || '') || // 4-digit time format
-                              inputElement.placeholder?.includes('時') ||
+                              /\d{2}:\d{2}/.test(inputElement.value || '') || // Current value is HH:MM
+                              /^\d{4}$/.test(inputElement.value || '') || // Current value is 4 digits
                               inputElement.maxLength === 4; // Common for HHMM format
             
             if (isTimeField) {
@@ -140,29 +151,26 @@ import { createOptionsFromSelect } from './shared/utils.js';
         // Strategy 3: Look for inputs in specific table structures
         const tables = document.querySelectorAll('table');
         tables.forEach(table => {
-            const timeHeaders = table.querySelectorAll('th, td');
+            const timeHeaders = table.querySelectorAll('th');
             timeHeaders.forEach(header => {
                 const headerText = header.textContent || '';
-                if (headerText.includes('時刻') || headerText.includes('時間')) {
-                    // Find inputs in the same row or nearby rows
-                    const headerRow = header.closest('tr');
-                    if (headerRow) {
-                        const inputs = headerRow.querySelectorAll('input[type="text"]');
-                        inputs.forEach(input => {
-                            console.log('Table structure time input:', input);
-                            enhanceTimeInput(input as HTMLInputElement);
-                        });
-                        
-                        // Also check the next row
-                        const nextRow = headerRow.nextElementSibling;
-                        if (nextRow) {
-                            const nextInputs = nextRow.querySelectorAll('input[type="text"]');
-                            nextInputs.forEach(input => {
-                                console.log('Next row time input:', input);
-                                enhanceTimeInput(input as HTMLInputElement);
+                if ((headerText.includes('時刻') || headerText.includes('時間')) && 
+                    !headerText.includes('例')) {
+                    // Find inputs in the same column
+                    const headerIndex = Array.from(header.parentElement?.children || []).indexOf(header);
+                    const rows = table.querySelectorAll('tr');
+                    rows.forEach(row => {
+                        const cell = row.children[headerIndex];
+                        if (cell) {
+                            const inputs = cell.querySelectorAll('input[type="text"]');
+                            inputs.forEach(input => {
+                                if (!input.closest('small.jbc-text-sub')) {
+                                    console.log('Table column time input:', input);
+                                    enhanceTimeInput(input as HTMLInputElement);
+                                }
                             });
                         }
-                    }
+                    });
                 }
             });
         });
