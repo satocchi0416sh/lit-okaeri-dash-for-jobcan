@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Jobcan Okaeri Dash",
+  "version": "1.0.0",
+  "description": "Jobcanの打刻場所選択をリッチなUIに改善",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.jobcan.jp/*",
+        "http://*.jobcan.jp/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.jobcan.jp/*",
+    "http://*.jobcan.jp/*"
+  ]
+}
