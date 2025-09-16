@@ -1,6 +1,6 @@
 // Location selector component for Jobcan
 
-import { CategoryKey, isInCategory } from './categories.js';
+import { CategoryKey, isInCategory, getAllCategoryKeys } from './categories.js';
 import { loadFavorites, toggleFavorite } from './storage.js';
 import { Option, escapeHtml, getOptionByValue, createStarIcon, createSearchIcon } from './utils.js';
 
@@ -85,12 +85,7 @@ export class LocationSelector {
                 <div class="jcs-tabs">
                     <button class="jcs-tab active" data-category="all">すべて</button>
                     <button class="jcs-tab" data-category="favorites">${createStarIcon(true)} お気に入り</button>
-                    <button class="jcs-tab" data-category="キャンプ">キャンプ</button>
-                    <button class="jcs-tab" data-category="スクール">スクール</button>
-                    <button class="jcs-tab" data-category="イベント">イベント</button>
-                    <button class="jcs-tab" data-category="リーダーズ">リーダーズ</button>
-                    <button class="jcs-tab" data-category="コーポレート">コーポレート</button>
-                    <button class="jcs-tab" data-category="その他">その他</button>
+                    ${this.generateCategoryTabs()}
                 </div>
             </div>
             <div class="jcs-list-container">
@@ -99,6 +94,13 @@ export class LocationSelector {
         `;
         
         return container;
+    }
+
+    private generateCategoryTabs(): string {
+        const categoryKeys = getAllCategoryKeys();
+        return categoryKeys.map(category => 
+            `<button class="jcs-tab" data-category="${category}">${category}</button>`
+        ).join('');
     }
 
     private renderList() {
