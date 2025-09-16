@@ -1,0 +1,145 @@
+/* Edit Page Specific Styles */
+
+/* Date Picker */
+.jce-date-picker-container {
+  margin: 16px 0;
+  padding: 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.jce-date-picker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.jce-date-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.jce-date-input {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.jce-date-input:focus {
+  outline: none;
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+}
+
+.jce-today-btn {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.jce-today-btn:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+/* Time Picker */
+.jce-time-picker-container {
+  margin: 8px 0;
+}
+
+.jce-time-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.jce-time-input {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.jce-time-input:focus {
+  outline: none;
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+}
+
+.jce-now-btn {
+  padding: 6px 12px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.jce-now-btn:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+/* Location Selector adjustments for edit page */
+.jce-location-selector {
+  margin: 12px 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.jce-location-selector .jcs-selected-top {
+  margin-bottom: 0;
+  border-radius: 0;
+}
+
+.jce-location-selector .jcs-header {
+  padding: 12px;
+}
+
+.jce-location-selector .jcs-list-container {
+  max-height: 240px;
+}
+
+/* Mobile responsiveness for edit page */
+@media (max-width: 768px) {
+  .jce-date-picker {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .jce-time-picker {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .jce-time-input {
+    min-width: auto;
+    width: 100%;
+  }
+}

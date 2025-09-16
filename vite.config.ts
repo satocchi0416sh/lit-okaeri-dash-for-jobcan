@@ -17,9 +17,14 @@ export default defineConfig({
         },
         content_scripts: [
           {
-            matches: ["https://*.jobcan.jp/*", "http://*.jobcan.jp/*"],
+            matches: ["https://*.jobcan.jp/employee", "http://*.jobcan.jp/employee"],
             js: ["src/content/content.ts"],
             css: ["src/content/styles.css"]
+          },
+          {
+            matches: ["https://*.jobcan.jp/employee/adit/modify*", "http://*.jobcan.jp/employee/adit/modify*"],
+            js: ["src/content/modify-content.ts"],
+            css: ["src/content/styles.css", "src/content/modify-styles.css"]
           }
         ],
         permissions: ["storage"],
@@ -37,6 +42,7 @@ export default defineConfig({
       input: {
         popup: resolve(__dirname, 'index.html'),
         content: resolve(__dirname, 'src/content/content.ts'),
+        modifyContent: resolve(__dirname, 'src/content/modify-content.ts'),
       },
     },
   },
