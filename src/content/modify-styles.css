@@ -1,4 +1,6 @@
-/* Edit Page Specific Styles */
+/* Edit Page Specific Styles - Form Components and Visual State Indicators */
+
+/* === Form Components === */
 
 /* Date Picker */
 .jce-date-picker-container {
@@ -126,7 +128,241 @@
   max-height: 240px;
 }
 
-/* Mobile responsiveness for edit page */
+/* === Visual State Indicators === */
+
+/* Edit mode indicator badge */
+.jce-edit-mode-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideInRight 0.4s ease-out;
+  transition: all 0.3s ease;
+}
+
+.jce-edit-mode-indicator:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
+}
+
+.jce-edit-mode-indicator::before {
+  content: '✏️';
+  font-size: 18px;
+}
+
+/* Form highlighting for edit mode */
+.jce-form-edit-mode {
+  border: 2px solid #ff6b6b !important;
+  background: linear-gradient(to bottom, rgba(255, 107, 107, 0.02), transparent) !important;
+  animation: pulse 2s infinite;
+}
+
+/* Time input highlighting */
+.jce-editing-time {
+  border-color: #ff6b6b !important;
+  background-color: #fff5f5 !important;
+  animation: highlightField 0.3s ease-out;
+}
+
+/* Before/after value styling */
+.jce-before-value {
+  display: inline-flex;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-right: 12px;
+  position: relative;
+}
+
+.jce-before-value b {
+  color: #6c757d;
+  margin-right: 8px;
+}
+
+.jce-before-value::after {
+  content: '→';
+  position: absolute;
+  right: -20px;
+  color: #ff6b6b;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Mode badges */
+.jce-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  background: #28a745;
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 12px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.jce-mode-badge.edit-mode {
+  background: #ff6b6b;
+}
+
+.jce-mode-badge.new-mode {
+  background: #007bff;
+}
+
+/* Help text for edit mode */
+.jce-edit-help {
+  background: linear-gradient(135deg, #fff5f5, #ffe5e5);
+  border: 1px solid #ffcccc;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #721c24;
+  animation: slideDown 0.3s ease-out;
+}
+
+.jce-edit-help::before {
+  content: '💡';
+  margin-right: 8px;
+}
+
+/* Background overlay for focus */
+.jce-edit-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+  z-index: 999;
+  animation: fadeInOverlay 0.3s ease-out;
+}
+
+/* Cancel edit button */
+.jce-cancel-edit {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10001;
+  transition: all 0.3s ease;
+  animation: bounceIn 0.5s ease-out;
+}
+
+.jce-cancel-edit:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* === Animations === */
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+  }
+}
+
+@keyframes highlightField {
+  0% {
+    transform: scale(1);
+    background-color: #ffe5e5;
+  }
+  50% {
+    transform: scale(1.02);
+    background-color: #ffcccc;
+  }
+  100% {
+    transform: scale(1);
+    background-color: #fff5f5;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* === Mobile Responsiveness === */
+
 @media (max-width: 768px) {
   .jce-date-picker {
     flex-direction: column;
@@ -141,5 +377,18 @@
   .jce-time-input {
     min-width: auto;
     width: 100%;
+  }
+
+  .jce-edit-mode-indicator {
+    top: 10px;
+    right: 10px;
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .jce-cancel-edit {
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 16px;
   }
 }

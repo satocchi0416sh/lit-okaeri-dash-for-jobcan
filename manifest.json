@@ -8,23 +8,11 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://*.jobcan.jp/*",
-        "http://*.jobcan.jp/*"
-      ],
-      "js": [
-        "content.js"
-      ],
-      "css": [
-        "content.css"
-      ]
+      "matches": ["https://*.jobcan.jp/*", "http://*.jobcan.jp/*"],
+      "js": ["content.js"],
+      "css": ["content.css"]
     }
   ],
-  "permissions": [
-    "storage"
-  ],
-  "host_permissions": [
-    "https://*.jobcan.jp/*",
-    "http://*.jobcan.jp/*"
-  ]
+  "permissions": ["storage"],
+  "host_permissions": ["https://*.jobcan.jp/*", "http://*.jobcan.jp/*"]
 }
