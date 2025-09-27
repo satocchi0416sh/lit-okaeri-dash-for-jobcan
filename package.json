@@ -11,7 +11,10 @@
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "version:patch": "node scripts/prepare-release.js patch",
+    "version:minor": "node scripts/prepare-release.js minor",
+    "version:major": "node scripts/prepare-release.js major"
   },
   "type": "module",
   "keywords": [],
