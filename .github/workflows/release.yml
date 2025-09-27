@@ -1,0 +1,143 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests and checks
+        run: |
+          npm run lint
+          npm run format:check
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Get version from package.json
+        id: package-version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Extension version: $VERSION"
+
+      - name: Check if tag exists
+        id: check-tag
+        run: |
+          if git rev-parse "v${{ steps.package-version.outputs.VERSION }}" >/dev/null 2>&1; then
+            echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+          else
+            echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create release tag
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "v${{ steps.package-version.outputs.VERSION }}" -m "Release v${{ steps.package-version.outputs.VERSION }}"
+          git push origin "v${{ steps.package-version.outputs.VERSION }}"
+
+      - name: Package extension
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false'
+        run: |
+          # Create release directory
+          mkdir -p release
+
+          # Create extension package (excluding unnecessary files)
+          cd dist
+          zip -r "../release/jobcan-okaeri-dash-v${{ steps.package-version.outputs.VERSION }}.zip" . \
+            -x "*.map" \
+            -x ".DS_Store" \
+            -x "Thumbs.db"
+          cd ..
+
+          # Create source code archive for store submission
+          zip -r "release/source-v${{ steps.package-version.outputs.VERSION }}.zip" . \
+            -x "*.git*" \
+            -x "node_modules/*" \
+            -x "dist/*" \
+            -x "release/*" \
+            -x ".DS_Store" \
+            -x "Thumbs.db" \
+            -x "*.log"
+
+      - name: Generate release notes
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false'
+        id: release-notes
+        run: |
+          # Get the previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "First release"
+            COMMITS=$(git log --pretty=format:"- %s" HEAD)
+          else
+            echo "Changes since $PREV_TAG"
+            COMMITS=$(git log --pretty=format:"- %s" "$PREV_TAG"..HEAD)
+          fi
+
+          # Generate release notes
+          cat << EOF > release-notes.md
+          ## 🚀 Release v${{ steps.package-version.outputs.VERSION }}
+
+          ### 📋 Changes
+          $COMMITS
+
+          ### 📦 Assets
+          - **jobcan-okaeri-dash-v${{ steps.package-version.outputs.VERSION }}.zip**: Chrome拡張機能パッケージ
+          - **source-v${{ steps.package-version.outputs.VERSION }}.zip**: ソースコード（Chrome Web Store提出用）
+
+          ### 🔧 Installation
+          1. Download \`jobcan-okaeri-dash-v${{ steps.package-version.outputs.VERSION }}.zip\`
+          2. Open Chrome and navigate to \`chrome://extensions/\`
+          3. Enable "Developer mode"
+          4. Click "Load unpacked" and select the extracted folder
+
+          ### 🏪 Chrome Web Store
+          The extension will be submitted to the Chrome Web Store for review.
+          EOF
+
+      - name: Create GitHub Release
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.package-version.outputs.VERSION }}
+          name: Release v${{ steps.package-version.outputs.VERSION }}
+          body_path: release-notes.md
+          draft: false
+          prerelease: false
+          files: |
+            release/jobcan-okaeri-dash-v${{ steps.package-version.outputs.VERSION }}.zip
+            release/source-v${{ steps.package-version.outputs.VERSION }}.zip
+
+      - name: Upload artifacts
+        if: steps.check-tag.outputs.TAG_EXISTS == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-package
+          path: |
+            release/jobcan-okaeri-dash-v${{ steps.package-version.outputs.VERSION }}.zip
+            release/source-v${{ steps.package-version.outputs.VERSION }}.zip
